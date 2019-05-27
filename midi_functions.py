@@ -118,7 +118,7 @@ def get_meta_messages(path='/Users/sorenh/documents/MIDI/HarryPotter.mid', v=Tru
     
 
 def get_music_messages(path='/Users/sorenh/documents/MIDI/HarryPotter.mid', v=True):
-    mid = mido.MidiFile('/Users/sorenh/documents/MIDI/HarryPotter.mid')
+    mid = mido.MidiFile(path)
     messages = []
     for i, track in enumerate(mid.tracks):
         for msg in track:
@@ -143,6 +143,14 @@ def play(meta, messages):
     for msg in mid.play():
         outport.send(msg)
 
+def play_midi(path='/Users/sorenh/documents/MIDI/HarryPotter.mid'):
+    mid = mido.MidiFile(path)
+    outport = mido.open_output('IAC Driver Bus 1')
+    for msg in mid.play():
+        outport.send(msg)
+        
+        
+
 def split_motifs(messages, notes_per_motif=5):
     motif_list = []
 #    print(type(motif_list))
@@ -150,10 +158,10 @@ def split_motifs(messages, notes_per_motif=5):
     n = len(messages)
     i = 0
 
-    while (i + notes_per_motif < n):
+    while (i + 2*notes_per_motif < n):
 #        print(type(motif_list))
-        motif_list.append(messages[i:i+notes_per_motif])
-        i += notes_per_motif
+        motif_list.append(messages[i:i + 2*notes_per_motif]) #because there are two messages per note
+        i += 2*notes_per_motif
         
     motif_list.append(messages[i:])
     
