@@ -43,6 +43,24 @@ def match_motifs(motifs, snippets):
         matches.append(match)
     return matches
 
+def plot_notes_traj(traj, motifs, matches, filename):
+    num_timesteps = len(traj)
+    x = np.arange(0, num_timesteps)
+    x2 = np.arange(0, len(motifs[0])*len(matches))
+    music = []
+    for match in matches:
+        music += motifs[match].tolist() 
+
+    plt.clf()
+    plt.figure(figsize=(20, 5))
+    plt.plot(x, traj, '-_b', x2, music, '-_m')
+    plt.legend(['original trajectory', 'generated notes'])
+    plt.ylim(60, 100)
+    plt.xlabel('time')
+    plt.ylabel('pitch')
+    plt.savefig(filename)
+
+
 
 if __name__ == '__main__':
 
@@ -63,4 +81,6 @@ if __name__ == '__main__':
     print(matches)
     print(len(matches))
  
+    # Plot trajectory overlaid with selected series of motifs
+    plot_notes_traj(traj, motifs, matches, 'notes-traj.pdf')
 
