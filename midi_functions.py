@@ -176,7 +176,55 @@ def stich_motifs(motifs, order):
             music.append(note)
             
     return music
+
+# returns arrays with [note, velocity, length, time] for each note in a MIDI file
+def get_features(path='/Users/sorenh/documents/MIDI/HarryPotter.mid'):
+    mid = mido.MidiFile(path)
+    features = []
+    incomplete_features = []
+    time = 0
+    for i, track in enumerate(mid.tracks):
+        for msg in track:
+            msgd = msg.dict()
+            time += msgd['time']
+            if (msgd['type'] == 'note_on'):
+#                print(msg)
+                incomplete_features.append(
+                        [msgd['note'],msgd['velocity'],0,time])
+            if (msgd['type'] == 'note_off'):
+#                print(msg)
+                for j in range(len(incomplete_features)):
+                    if incomplete_features[j][0] == msgd['note']:
+                        incomplete_features[j][2] = time - incomplete_features[j][3]
+                        features.append(incomplete_features.pop(j))
+    return np.array(features)
     
+def get_XY(features, n_notes = 5, save_to_file=False, name='harry_potter_features'):
+    X = []
+    Y = []
+    n,d = features.shape
+#    print(n)X
+    i = 0
+    while (i + n_notes + 1 < n ):
+        x = np.copy(features[i:i + n_notes])
+        begin_time = x[0,3]
+        x[:,3] = x[:,3] - begin_time
+        X.append(x.flatten())
+        y = np.copy(features[i + n_notes + 1])
+        y[3] = y[3] - begin_time
+        Y.append(y)
+        i += 1
+         
+    X = np.array(X)
+    Y = np.array(Y)
+    
+    if (save_to_file):
+        np.savetxt(name + '_X.txt',X,fmt='%i')
+        np.savetxt(name + '_Y.txt',Y,fmt='%i')
+    
+    return (X,Y)
+        
+        
     
     
 
