@@ -3,6 +3,7 @@
 import mido
 from os.path import basename
 import numpy as np
+import glob
 
 def get_time_info(path='/Users/sorenh/documents/MIDI/HarryPotter.mid',v=True):
     mid = mido.MidiFile(path)
@@ -233,6 +234,32 @@ def get_XY(features, n_notes = 5, save_to_file=False, name='harry_potter_feature
     
     return (X,Y)
         
+def get_notes(path='/Users/sorenh/documents/MIDI/HarryPotter.mid'):
+    mid = mido.MidiFile(path)
+    notes = []
+    for i, track in enumerate(mid.tracks):
+        for msg in track:
+            msgd = msg.dict()
+            time += msgd['time']
+            if (msgd['type'] == 'note_on'):
+                notes.append( msgd['note'])    
+    return notes
+
+def get_note_training_set(prev_notes=10, save_name):
+    midi_files = glob.glob("./Soren/songs/*.mid")
+    X = []
+    Y = []
+    for file in midi_files:
+        notes = get_notes(path=file)
+        i = 0
+        while(i + prev_notes + 1 < len(notes)):
+            X.append(notes[i:i + prev_notes])
+            Y.append(notes[i + prev_notes + 1])
+            i += 1
+    X = np.array(X)
+    Y = np.array(Y)
+        
+    
         
     
     
