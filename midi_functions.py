@@ -240,12 +240,11 @@ def get_notes(path='/Users/sorenh/documents/MIDI/HarryPotter.mid'):
     for i, track in enumerate(mid.tracks):
         for msg in track:
             msgd = msg.dict()
-            time += msgd['time']
             if (msgd['type'] == 'note_on'):
                 notes.append( msgd['note'])    
     return notes
 
-def get_note_training_set(prev_notes=10, save_name):
+def get_note_training_set(prev_notes=10):
     midi_files = glob.glob("./Soren/songs/*.mid")
     X = []
     Y = []
@@ -258,6 +257,12 @@ def get_note_training_set(prev_notes=10, save_name):
             i += 1
     X = np.array(X)
     Y = np.array(Y)
+    
+    np.savetxt('X.txt',X,fmt='%i')
+    np.savetxt('Y.txt',Y,fmt='%i')
+    
+    
+    return (X,Y)
         
     
         
