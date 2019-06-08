@@ -263,6 +263,19 @@ def get_note_training_set(prev_notes=10):
     
     
     return (X,Y)
+
+def create_midi_from_notes(notes):
+    mid = mido.MidiFile()
+    track = mido.MidiTrack()
+    mid.tracks.append(track)
+    track.append(mido.Message('program_change', program=12, time=0))
+    
+    for note in notes:
+        note = int(note)
+        track.append(mido.Message('note_on', note=note, velocity=80, time=0))
+        track.append(mido.Message('note_off', note=note, velocity=80, time=50))
+
+    mid.save('generated_song.mid')
         
     
         
