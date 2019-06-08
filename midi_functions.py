@@ -98,6 +98,20 @@ def create_simplified_time_note_array(path='/Users/sorenh/documents/MIDI/HarryPo
         np.savetxt(filename,array,fmt='%i')
     return np.array(array)
 
+def print_messages(path='/Users/sorenh/documents/MIDI/HarryPotter.mid'):
+    mid = mido.MidiFile(path)
+    messages = []
+    print(mid)
+    print('##############')
+    for i, track in enumerate(mid.tracks):
+        print('track {}'.format(i))
+        print(track)
+        for i, msg in enumerate(track):
+            print(msg)
+            if (i == 20):
+                break
+        print('##############')
+
 def get_meta_messages(path='/Users/sorenh/documents/MIDI/HarryPotter.mid', v=True,):
     mid = mido.MidiFile('/Users/sorenh/documents/MIDI/HarryPotter.mid')
     messages = []
@@ -264,16 +278,16 @@ def get_note_training_set(prev_notes=10):
     
     return (X,Y)
 
-def create_midi_from_notes(notes, off=100, on=300):
+def create_midi_from_notes(notes, on=512, off=0, vel_on=90, vel_off=0):
     mid = mido.MidiFile()
     track = mido.MidiTrack()
     mid.tracks.append(track)
-    track.append(mido.Message('program_change', program=12, time=0))
+#    track.append(mido.Message('program_change', program=12, time=0))
     
     for note in notes:
         note = int(note)
-        track.append(mido.Message('note_on', note=note, velocity=off, time=0))
-        track.append(mido.Message('note_off', note=note, velocity=on, time=200))
+        track.append(mido.Message('note_on', note=note, velocity=vel_on, time=off))
+        track.append(mido.Message('note_off', note=note, velocity=vel_off, time=on))
 
     mid.save('generated_song.mid')
         
