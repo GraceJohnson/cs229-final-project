@@ -1,5 +1,5 @@
 # %matplotlib notebook
-from music21 import converter, instrument, note, stream, chord
+# from music21 import converter, instrument, note, stream, chord
 # import tensorflow as tf
 from tensorflow.keras import optimizers
 from tensorflow.keras.models import Sequential
@@ -18,7 +18,8 @@ import matplotlib.pyplot as plt
 
 def train_network():
     """ Train a Neural Network to generate music """
-    notes = get_notes()
+    with open('data/notes', 'rb') as filepath:
+	notes = pickle.load(filepath)
 
     # get amount of pitch names
     # n_vocab = len(set(np.ndarray.flatten(np.array(notes))))
@@ -37,41 +38,6 @@ def train_network():
     np.save("b", network_output)
 
     return train(model, network_input, network_output)
-
-def get_notes():
-    """ Get all the notes and chords from the midi files in the ./midi_songs directory """
-    notes = []
-
-    for file in glob.glob("midi_songs/*.mid"):
-        midi = converter.parse(file)
-        notes_i = []
-
-        print("Parsing %s" % file)
-
-        notes_to_parse = None
-
-        try: # file has instrument parts
-            s2 = instrument.partitionByInstrument(midi)
-            notes_to_parse = s2.parts[0].recurse() 
-        except: # file has notes in a flat structure
-            notes_to_parse = midi.flat.notes
-
-        for element in notes_to_parse:
-            if isinstance(element, note.Note):
-                notes_i.append(str(element.pitch))
-            elif isinstance(element, chord.Chord):
-                notes_i.append(str(element.pitches[-1])) # take the note with the highest octave? This is a modification
-        
-        # trim out the excess to standardize the length of the musical piece
-        desired_length = len(notes_i) - (len(notes_i) % 50) # 50 will be our input length
-        notes.append(notes_i[0:desired_length])
-
-    assert len(notes) == len(glob.glob("midi_songs/*.mid"))
-    
-    with open('data/notes', 'wb') as filepath:
-        pickle.dump(notes, filepath)
-
-    return notes
 
 def prepare_sequences(notes, n_vocab):
     """ Prepare the sequences used by the Neural Network """
