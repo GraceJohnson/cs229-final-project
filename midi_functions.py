@@ -258,8 +258,8 @@ def get_note_training_set(prev_notes=10):
     X = np.array(X)
     Y = np.array(Y)
     
-    np.savetxt('X.txt',X,fmt='%i')
-    np.savetxt('Y.txt',Y,fmt='%i')
+    np.savetxt(str(prev_notes) + 'X.txt',X,fmt='%i')
+    np.savetxt(str(prev_notes) + 'Y.txt',Y,fmt='%i')
     
     
     return (X,Y)
