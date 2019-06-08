@@ -264,7 +264,7 @@ def get_note_training_set(prev_notes=10):
     
     return (X,Y)
 
-def create_midi_from_notes(notes):
+def create_midi_from_notes(notes, off=100, on=300):
     mid = mido.MidiFile()
     track = mido.MidiTrack()
     mid.tracks.append(track)
@@ -272,8 +272,8 @@ def create_midi_from_notes(notes):
     
     for note in notes:
         note = int(note)
-        track.append(mido.Message('note_on', note=note, velocity=80, time=0))
-        track.append(mido.Message('note_off', note=note, velocity=80, time=50))
+        track.append(mido.Message('note_on', note=note, velocity=off, time=0))
+        track.append(mido.Message('note_off', note=note, velocity=on, time=200))
 
     mid.save('generated_song.mid')
         
