@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 def train_network():
     """ Train a Neural Network to generate music """
     with open('data/notes', 'rb') as filepath:
-	notes = pickle.load(filepath)
+        notes = pickle.load(filepath)
 
     # get amount of pitch names
     # n_vocab = len(set(np.ndarray.flatten(np.array(notes))))
