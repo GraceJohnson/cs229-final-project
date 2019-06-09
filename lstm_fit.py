@@ -112,7 +112,7 @@ def train(model, network_input, network_output):
     
     plot = live_plot()
     
-    callbacks_list = [checkpoint, plot]
+    callbacks_list = [checkpoint]
 
     history_object = model.fit(network_input, network_output, 
                                epochs=200, batch_size=64,
@@ -159,4 +159,8 @@ class live_plot(callbacks.Callback):
         plt.savefig("accuracy.png");
 
 if __name__ == '__main__':
-	train_network()
+	history_object = train_network()
+	np.save("accuracy", history_object.history['acc'])
+	np.save("val_accuracy", history_object.history['val_acc'])
+	np.save("loss", history_object.history['loss'])
+	np.save("val_loss", history_object.history['val_loss'])

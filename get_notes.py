@@ -47,7 +47,7 @@ def get_notes():
     assert len(notes) == len(glob.glob("midi_songs/*.mid"))
     
     with open('data/notes', 'wb') as filepath:
-        pickle.dump(notes, filepath)
+        pickle.dump(notes, filepath, protocol=2)
 
     return notes
 
