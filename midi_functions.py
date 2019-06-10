@@ -259,7 +259,7 @@ def get_notes(path='/Users/sorenh/documents/MIDI/HarryPotter.mid'):
     return notes
 
 def get_note_training_set(prev_notes=10):
-    midi_files = glob.glob("./Soren/songs/*.mid")
+    midi_files = glob.glob("./simplified_songs/*.mid")
     X = []
     Y = []
     for file in midi_files:
@@ -275,6 +275,24 @@ def get_note_training_set(prev_notes=10):
     np.savetxt(str(prev_notes) + 'X.txt',X,fmt='%i')
     np.savetxt(str(prev_notes) + 'Y.txt',Y,fmt='%i')
     
+    return (X,Y)
+
+def get_hijacked_note_training_set(prev_notes=10):
+    midi_files = glob.glob("./simplified_songs/*.mid")
+    X = []
+    Y = []
+    for file in midi_files:
+        notes = get_notes(path=file)
+        i = 0
+        while(i + prev_notes < len(notes)):
+            X.append(notes[i:i + prev_notes])
+            Y.append(notes[i + prev_notes])
+            i += 1
+    X = np.array(X)
+    Y = np.array(Y)
+    
+    np.savetxt(str(prev_notes) + 'HX.txt',X,fmt='%i')
+    np.savetxt(str(prev_notes) + 'HY.txt',Y,fmt='%i')
     
     return (X,Y)
 
