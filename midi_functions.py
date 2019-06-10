@@ -267,7 +267,7 @@ def get_note_training_set(prev_notes=10):
         i = 0
         while(i + prev_notes + 1 < len(notes)):
             X.append(notes[i:i + prev_notes])
-            Y.append(notes[i + prev_notes + 1])
+            Y.append(notes[i + prev_notes])
             i += 1
     X = np.array(X)
     Y = np.array(Y)
@@ -286,7 +286,7 @@ def get_hijacked_note_training_set(prev_notes=10):
         i = 0
         while(i + prev_notes < len(notes)):
             X.append(notes[i:i + prev_notes])
-            Y.append(notes[i + prev_notes])
+            Y.append(notes[i + prev_notes - 1])
             i += 1
     X = np.array(X)
     Y = np.array(Y)
