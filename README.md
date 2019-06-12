@@ -5,6 +5,8 @@ This repository contains code and data used in our final project for CS 229 at S
 
 Authors: Austin Atsango, Soren Holm, K. Grace Johnson
 
-data: chemical dynamics data and music data in MIDI format
-models: scripts and Python notebooks for machine learning models we used
-utils: scripts for processing data and analyzing results
+data/ -  chemical dynamics data and music data in MIDI format
+
+models/ -  scripts and Python notebooks for machine learning models we used
+
+utils/ -  scripts for processing data and analyzing results
