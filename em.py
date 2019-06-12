@@ -51,24 +51,24 @@ def read_trajs(traj_dir, size_motif):
     for i in range(100):
         traj_name = ''
         if i<10:
-            #traj_e = np.loadtxt(traj_dir+"/e_000{}.txt".format(i))
+            traj_e = np.loadtxt(traj_dir+"/e_000{}.txt".format(i))
             traj_g = np.loadtxt(traj_dir+"/g_000{}.txt".format(i))
             traj_name = '_000{}.txt'.format(i)
         else:
-            #traj_e = np.loadtxt(traj_dir+"/e_00{}.txt".format(i))
+            traj_e = np.loadtxt(traj_dir+"/e_00{}.txt".format(i))
             traj_g = np.loadtxt(traj_dir+"/g_00{}.txt".format(i))
             traj_name = '_00{}.txt'.format(i)
         
-        #snippets_e = extract_snippet(traj_e, size_motif)
+        snippets_e = extract_snippet(traj_e, size_motif)
         snippets_g = extract_snippet(traj_g, size_motif)
     
         length = len(em_set)
         num_motifs = len(snippets_g)
-        #mapper['e'+traj_name] = [length, length+num_motifs]
-        #mapper['g'+traj_name] = [length+num_motifs, length+2*num_motifs]
-        mapper['g'+traj_name] = [length, length+num_motifs]
+        mapper['e'+traj_name] = [length, length+num_motifs]
+        mapper['g'+traj_name] = [length+num_motifs, length+2*num_motifs]
+        #mapper['g'+traj_name] = [length, length+num_motifs]
 
-        #em_set.extend(snippets_e)
+        em_set.extend(snippets_e)
         em_set.extend(snippets_g)
 
     em_set = np.array(em_set)
@@ -124,10 +124,9 @@ def match_means_to_motifs(means, song):
         losses = []
         # Calculate losses for this snippet compared to each motif
         for motif in song:
-            # TODO: weight parameters?
             A = 10
             B = 2
-            C = 1
+            C = 0
             loss = A*distance_loss(snippet, motif) + B*gradient_loss(snippet, motif) + C*curve_loss(snippet, motif)
             losses.append(loss)
         match = np.argmin(losses)
@@ -165,7 +164,6 @@ def create_midi_from_notes(notes, filename, on=256, off=0, vel_on=90, vel_off=0)
     mid = mido.MidiFile()
     track = mido.MidiTrack()
     mid.tracks.append(track)
-#    track.append(mido.Message('program_change', program=12, time=0))
 
     for note in notes:
         note = int(note)
@@ -231,7 +229,6 @@ def plot_population(population):
     plt.clf()
     plt.figure(figsize=(12, 5))
     plt.bar(ind, population)
-    #plt.xticks(ind)
     plt.xlabel('Gaussian mean label')
     plt.ylabel('# snippets')
     plt.savefig('em-population.pdf')
@@ -244,7 +241,6 @@ if __name__ == '__main__':
     midi_file = sys.argv[2]
 
     size_motif = 6
-    #size_motif = 12
     # Read in midi file
     song = read_midi(midi_file, size_motif)
 
@@ -259,7 +255,7 @@ if __name__ == '__main__':
     write_songs(matches, mapper, labels)
 
     # Print EM population histogram
-    plot_population(population)
+    #plot_population(population)
 
     #avg_diff = plot_traj_song(matches, mapper, labels, em_set, size_motif) 
     #print("Average L2 diff between trajectory and sample: {}".format(avg_diff))
