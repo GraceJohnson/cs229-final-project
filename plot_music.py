@@ -10,7 +10,7 @@ def plot_notes(traj, filename):
     plt.clf()
     plt.figure(figsize=(20, 5))
     plt.plot(x, traj, '-_b')
-    plt.ylim(60, 100)
+    plt.ylim(50, 90)
     plt.xlabel('time')
     plt.ylabel('pitch')
     plt.savefig(filename)
@@ -18,8 +18,9 @@ def plot_notes(traj, filename):
 if __name__ == '__main__':
 
     music_file = sys.argv[1]
+    filename = sys.argv[2]
     notes = np.loadtxt(music_file)
-    plot_notes(notes, 'notes.pdf')
+    plot_notes(notes, filename)
 
 
 

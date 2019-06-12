@@ -76,7 +76,6 @@ def read_trajs(traj_dir, size_motif):
 
 def run_em(em_set, k):
     " Run GMM with EM algorithm on set and gradient of set "
-    print("yo")
 
     # Compute gradients of each snippet
     em_set_gradient = [np.gradient(item) for item in em_set]
@@ -93,8 +92,9 @@ def run_em(em_set, k):
   
     # Compute pitch means for each k
     means = []
+    population = []
     for i in range(k):
-        #means.append(np.sum(labels==i))
+        population.append(np.sum(labels==i))
         tot = 0
         for j in labels:
             if j == i:
@@ -102,8 +102,9 @@ def run_em(em_set, k):
         tot /= np.sum(labels==i)
         means.append(tot)
     means = np.array(means)
+    population = np.array(population)
 
-    return labels, means
+    return labels, means, population
 
 def distance_loss(x, y):
     return np.linalg.norm(x-y, ord=2)
@@ -192,7 +193,8 @@ def plot_traj_song(matches, mapper, labels, em_set, size_motif):
         for i in range(idx[0], idx[1]):
             sample.extend(matches[labels[i]])
             traj.extend(em_set[i])
-            diff += distance_loss(np.array(sample), np.array(traj))
+        diff += distance_loss(np.array(sample), np.array(traj)) / len(sample)
+        print(len(sample))
 
         len_sample = (idx[1]-idx[0])*size_motif
         x = np.arange(0, len_sample)
@@ -206,6 +208,7 @@ def plot_traj_song(matches, mapper, labels, em_set, size_motif):
         plt.ylabel('pitch')
         plt.savefig('em_samples_ground_plots/'+filename[:-4]+'.pdf')
 
+    print("Num trajs : {}".format(len(mapper)))
     diff /= len(mapper)
     return diff
 
@@ -220,7 +223,18 @@ def compute_diff(matches, mapper, labels, em_set, size_motif):
 
         len_sample = (idx[1]-idx[0])*size_motif
      
-
+def plot_population(population):
+    print(population)
+    print(population.shape)
+    ind = np.arange(1, len(population)+1)
+    
+    plt.clf()
+    plt.figure(figsize=(12, 5))
+    plt.bar(ind, population)
+    #plt.xticks(ind)
+    plt.xlabel('Gaussian mean label')
+    plt.ylabel('# snippets')
+    plt.savefig('em-population.pdf')
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
@@ -229,41 +243,25 @@ if __name__ == '__main__':
     traj_dir = sys.argv[1]
     midi_file = sys.argv[2]
 
-    size_motif = 7
+    size_motif = 6
+    #size_motif = 12
     # Read in midi file
     song = read_midi(midi_file, size_motif)
-    print(song)
 
     k = int(len(song)/size_motif)
     song = np.split(np.array(song), k)
     song = np.array(song)
-    print(song)
-    print(song.shape)
     
     em_set, mapper = read_trajs(traj_dir, size_motif)    
-    labels, means = run_em(em_set, k)
-    print(means)
-    print(means.shape)
-    print(np.min(means))
-    print(np.max(means))
-    print(np.max(song))
-    print(np.min(song))
+    labels, means, population = run_em(em_set, k)
     # matches are the music snippets in the same order as designated by labels
     matches = match_means_to_motifs(means, song)
     write_songs(matches, mapper, labels)
 
-    print(em_set.shape)
-    avg_diff = plot_traj_song(matches, mapper, labels, em_set, size_motif) 
+    # Print EM population histogram
+    plot_population(population)
 
-    print("Average L2 diff between trajectory and sample: {}".format(avg_diff))
-
-
-
-
-
-
-
-
-
+    #avg_diff = plot_traj_song(matches, mapper, labels, em_set, size_motif) 
+    #print("Average L2 diff between trajectory and sample: {}".format(avg_diff))
 
 
